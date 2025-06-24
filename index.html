@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PsicoForo - Comunidad Psicológica</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <div class="container header-container">
+      <h1 class="logo">🧠 PsicoForo</h1>
+      <nav>
+        <input type="text" placeholder="Buscar..." />
+        <button onclick="window.location.href='contacto.html'" class="btn-secondary">Contacto</button>
+        <button onclick="toggleDarkMode()" class="btn-icon">🌓</button>
+        <button onclick="document.getElementById('loginModal').classList.remove('hidden')" class="btn-secondary">Iniciar sesión</button>
+        </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section>
+      <h2>Últimos posts</h2>
+      <div id="posts" class="posts-grid"></div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    © 2025 PsicoForo - Todos los derechos reservados
+  </footer>
+
+  <!-- Modal de inicio de sesión -->
+  <div id="loginModal" class="modal hidden">
+    <div class="modal-content">
+      <button class="close" onclick="document.getElementById('loginModal').classList.add('hidden')">&times;</button>
+      <h2>Iniciar sesión</h2>
+      <input type="text" id="username" placeholder="Usuario" required />
+      <input type="password" id="password" placeholder="Contraseña" required />
+      <button class="btn-primary btn-block" onclick="login()">Entrar</button>
+      <p id="loginStatus"></p>
+    </div>
+  </div>
+ 
+ <footer>
+    © 2025 PsicoForo - Todos los derechos reservados
+  </footer>
+  
+  <script src="script.js"></script>
+</body>
+</html>
