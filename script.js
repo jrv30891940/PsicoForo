@@ -86,24 +86,76 @@ function toggleDarkMode() {
 }
 
 // Al cargar la página
-if (localStorage.getItem("modoOscuro") === "1") {
-  document.body.classList.add("dark");
-}
+window.addEventListener("DOMContentLoaded", () => {
+  if (localStorage.getItem("modoOscuro") === "1") {
+    document.body.classList.add("dark");
+  }
+
+  // Firebase login state
+  if (typeof firebase !== "undefined") {
+    firebase.auth().onAuthStateChanged(user => {
+      const btnLogin = document.querySelector(".btn-login");
+      const btnLogout = document.querySelector(".btn-logout");
+
+      if (btnLogin && btnLogout) {
+        if (user) {
+          btnLogin.style.display = "none";
+          btnLogout.style.display = "inline-block";
+        } else {
+          btnLogin.style.display = "inline-block";
+          btnLogout.style.display = "none";
+        }
+      }
+    });
+  }
+});
 
 // ==========================
-// INICIO DE SESIÓN FICTICIO
+// FUNCIONES DE AUTENTICACIÓN
 // ==========================
 function login() {
-  const usuario = document.getElementById("username").value;
-  const pass = document.getElementById("password").value;
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
   const status = document.getElementById("loginStatus");
 
-  if (usuario === "admin" && pass === "1234") {
-    status.textContent = "Inicio de sesión exitoso.";
-    status.style.color = "green";
-    setTimeout(() => window.location.href = "index.html", 1000);
-  } else {
-    status.textContent = "Usuario o contraseña incorrectos.";
-    status.style.color = "red";
-  }
+  status.className = "";
+  firebase.auth().signInWithEmailAndPassword(email, password)
+    .then(userCredential => {
+      status.classList.add("success");
+      status.innerText = "Bienvenido, " + userCredential.user.email;
+
+      const modal = document.getElementById("loginModal");
+      if (modal) modal.classList.add("hidden");
+    })
+    .catch(error => {
+      status.classList.add("error");
+      status.innerText = "Error: " + error.message;
+    });
+}
+
+function registrarse() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  const status = document.getElementById("loginStatus");
+
+  status.className = "";
+  firebase.auth().createUserWithEmailAndPassword(email, password)
+    .then(userCredential => {
+      status.classList.add("success");
+      status.innerText = "Cuenta creada para " + userCredential.user.email;
+    })
+    .catch(error => {
+      status.classList.add("error");
+      status.innerText = "Error: " + error.message;
+    });
+}
+
+function logout() {
+  firebase.auth().signOut()
+    .then(() => {
+      alert("Sesión cerrada correctamente.");
+    })
+    .catch(error => {
+      console.error("Error al cerrar sesión:", error.message);
+    });
 }
