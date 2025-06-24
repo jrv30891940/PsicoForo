@@ -6,83 +6,208 @@
   <title>Iniciar sesión - PsicoForo</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Estilos mínimos para el modal y pestañas */
+    .modal {
+      position: fixed;
+      top: 0; left: 0; right:0; bottom:0;
+      background-color: rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .modal-content {
+      background: white;
+      padding: 1.5em;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 400px;
+      position: relative;
+    }
+    .close {
+      position: absolute;
+      top: 0.5em;
+      right: 0.5em;
+      background: none;
+      border: none;
+      font-size: 1.5em;
+      cursor: pointer;
+    }
+    .tabs {
+      display: flex;
+      margin-bottom: 1em;
+      gap: 0.5em;
+    }
+    .tabs button {
+      flex: 1;
+      padding: 0.5em;
+      cursor: pointer;
+      border: none;
+      background-color: #eee;
+      font-weight: bold;
+      border-radius: 4px;
+      transition: background-color 0.3s ease;
+    }
+    .tabs button.active {
+      background-color: #4285f4;
+      color: white;
+    }
+    .hidden {
+      display: none;
+    }
+    form input {
+      width: 100%;
+      margin-bottom: 1em;
+      padding: 0.5em;
+      font-size: 1em;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    .btn-primary {
+      width: 100%;
+      padding: 0.7em;
+      background-color: #4285f4;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1em;
+      transition: background-color 0.3s ease;
+    }
+    .btn-primary:hover {
+      background-color: #2a5dc7;
+    }
+    #loginStatus {
+      margin-top: 1em;
+      font-weight: bold;
+      min-height: 1.2em;
+    }
+    #loginStatus.error {
+      color: red;
+    }
+    #loginStatus.success {
+      color: green;
+    }
+  </style>
 </head>
 <body>
-  <header>
-    <div class="container header-container">
-      <h1 class="logo">🧠 PsicoForo</h1>
-      <nav>
-        <input type="text" placeholder="Buscar..." disabled />
-        <button onclick="toggleDarkMode()" class="btn-icon">🌓</button>
-        <button onclick="window.location.href='index.html'" class="btn-secondary">Volver</button>
-      </nav>
+
+<header>
+  <div class="container header-container">
+    <h1 class="logo">🧠 PsicoForo</h1>
+    <nav>
+      <button onclick="window.location.href='index.html'" class="btn-secondary">Volver</button>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <section class="formulario-contacto">
+    <h2>🔐 Iniciar sesión / Registrarse</h2>
+
+    <div class="tabs">
+      <button id="tab-login" class="active" onclick="mostrarFormulario('login')">Iniciar sesión</button>
+      <button id="tab-register" onclick="mostrarFormulario('register')">Registrarse</button>
     </div>
-  </header>
 
-  <main class="container">
-    <section class="formulario-contacto">
-      <h2>🔐 Iniciar sesión</h2>
-      <form onsubmit="login(); return false;">
-        <input type="email" id="email" placeholder="Correo electrónico" required />
-        <input type="password" id="password" placeholder="Contraseña" required />
-        <button type="submit" class="btn-primary btn-block">Entrar</button>
-        <button type="button" class="btn-secondary btn-block" onclick="registrarse()">Crear cuenta</button>
-        <p id="loginStatus" role="alert" aria-live="assertive"></p>
-      </form>
-    </section>
-  </main>
+    <form id="form-login" onsubmit="login(); return false;">
+      <input type="email" id="email" placeholder="Correo electrónico" required />
+      <input type="password" id="password" placeholder="Contraseña" required />
+      <button type="submit" class="btn-primary">Entrar</button>
+    </form>
 
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"></script>
-  <script>
-    // Tu configuración personal de Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyC_vTtTea1CQIPI3f0_wfUQE-_d8cAiuJc",
-      authDomain: "psicoforo-9af0c.firebaseapp.com",
-      projectId: "psicoforo-9af0c",
-      storageBucket: "psicoforo-9af0c.appspot.com",
-      messagingSenderId: "705288317415",
-      appId: "1:705288317415:web:66be2b6b40f5759ee5f542"
-    };
+    <form id="form-register" class="hidden" onsubmit="registrarse(); return false;">
+      <input type="email" id="email-reg" placeholder="Correo electrónico" required />
+      <input type="password" id="password-reg" placeholder="Contraseña" required />
+      <button type="submit" class="btn-primary">Crear cuenta</button>
+    </form>
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
+    <p id="loginStatus" role="alert" aria-live="assertive"></p>
+  </section>
+</main>
 
-    function login() {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
+<footer>
+  © 2025 PsicoForo - Todos los derechos reservados
+</footer>
 
-      auth.signInWithEmailAndPassword(email, password)
-        .then(userCredential => {
-          const user = userCredential.user;
-          document.getElementById("loginStatus").innerText = "Bienvenido, " + user.email;
-          // window.location.href = "index.html"; // Redirige si quieres
-        })
-        .catch(error => {
-          document.getElementById("loginStatus").innerText = "Error: " + error.message;
-        });
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"></script>
+
+<script>
+  // Configuración Firebase (pon aquí tu propia configuración)
+  const firebaseConfig = {
+    apiKey: "AIzaSyC_vTtTea1CQIPI3f0_wfUQE-_d8cAiuJc",
+    authDomain: "psicoforo-9af0c.firebaseapp.com",
+    projectId: "psicoforo-9af0c",
+    storageBucket: "psicoforo-9af0c.appspot.com",
+    messagingSenderId: "705288317415",
+    appId: "1:705288317415:web:66be2b6b40f5759ee5f542"
+  };
+  firebase.initializeApp(firebaseConfig);
+
+  // Función para mostrar el formulario correcto
+  function mostrarFormulario(form) {
+    const loginForm = document.getElementById("form-login");
+    const registerForm = document.getElementById("form-register");
+    const tabLogin = document.getElementById("tab-login");
+    const tabRegister = document.getElementById("tab-register");
+    const status = document.getElementById("loginStatus");
+
+    status.innerText = "";
+    status.className = "";
+
+    if (form === "login") {
+      loginForm.classList.remove("hidden");
+      registerForm.classList.add("hidden");
+      tabLogin.classList.add("active");
+      tabRegister.classList.remove("active");
+    } else {
+      loginForm.classList.add("hidden");
+      registerForm.classList.remove("hidden");
+      tabLogin.classList.remove("active");
+      tabRegister.classList.add("active");
     }
+  }
 
-    function registrarse() {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
+  // Login con Firebase
+  function login() {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const status = document.getElementById("loginStatus");
 
-      auth.createUserWithEmailAndPassword(email, password)
-        .then(userCredential => {
-          const user = userCredential.user;
-          document.getElementById("loginStatus").innerText = "Cuenta creada para " + user.email;
-        })
-        .catch(error => {
-          document.getElementById("loginStatus").innerText = "Error: " + error.message;
-        });
-    }
-  </script>
+    status.className = "";
+    firebase.auth().signInWithEmailAndPassword(email, password)
+      .then(userCredential => {
+        status.classList.add("success");
+        status.innerText = "Bienvenido, " + userCredential.user.email;
+      })
+      .catch(error => {
+        status.classList.add("error");
+        status.innerText = "Error: " + error.message;
+      });
+  }
 
-  <footer>
-    © 2025 PsicoForo - Todos los derechos reservados
-  </footer>
+  // Registro con Firebase
+  function registrarse() {
+    const email = document.getElementById("email-reg").value;
+    const password = document.getElementById("password-reg").value;
+    const status = document.getElementById("loginStatus");
 
-  <script src="script.js"></script>
+    status.className = "";
+    firebase.auth().createUserWithEmailAndPassword(email, password)
+      .then(userCredential => {
+        status.classList.add("success");
+        status.innerText = "Cuenta creada para " + userCredential.user.email;
+      })
+      .catch(error => {
+        status.classList.add("error");
+        status.innerText = "Error: " + error.message;
+      });
+  }
+</script>
+
 </body>
 </html>
