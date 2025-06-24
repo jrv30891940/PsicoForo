@@ -85,34 +85,39 @@ function toggleDarkMode() {
   localStorage.setItem("modoOscuro", document.body.classList.contains("dark") ? "1" : "0");
 }
 
-// Al cargar la página
-window.addEventListener("DOMContentLoaded", () => {
-  if (localStorage.getItem("modoOscuro") === "1") {
-    document.body.classList.add("dark");
-  }
-
-  // Firebase login state
-  if (typeof firebase !== "undefined") {
-    firebase.auth().onAuthStateChanged(user => {
-      const btnLogin = document.querySelector(".btn-login");
-      const btnLogout = document.querySelector(".btn-logout");
-
-      if (btnLogin && btnLogout) {
-        if (user) {
-          btnLogin.style.display = "none";
-          btnLogout.style.display = "inline-block";
-        } else {
-          btnLogin.style.display = "inline-block";
-          btnLogout.style.display = "none";
-        }
-      }
-    });
-  }
-});
+if (localStorage.getItem("modoOscuro") === "1") {
+  document.body.classList.add("dark");
+}
 
 // ==========================
-// FUNCIONES DE AUTENTICACIÓN
+// LOGIN Y REGISTRO CON FIREBASE
 // ==========================
+
+// Mostrar formulario login o registro
+function mostrarFormulario(form) {
+  const loginForm = document.getElementById("form-login");
+  const registerForm = document.getElementById("form-register");
+  const tabLogin = document.getElementById("tab-login");
+  const tabRegister = document.getElementById("tab-register");
+  const status = document.getElementById("loginStatus");
+
+  status.innerText = "";
+  status.className = "";
+
+  if (form === "login") {
+    loginForm.classList.remove("hidden");
+    registerForm.classList.add("hidden");
+    tabLogin.classList.add("active");
+    tabRegister.classList.remove("active");
+  } else {
+    loginForm.classList.add("hidden");
+    registerForm.classList.remove("hidden");
+    tabLogin.classList.remove("active");
+    tabRegister.classList.add("active");
+  }
+}
+
+// Login con Firebase
 function login() {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
@@ -123,9 +128,7 @@ function login() {
     .then(userCredential => {
       status.classList.add("success");
       status.innerText = "Bienvenido, " + userCredential.user.email;
-
-      const modal = document.getElementById("loginModal");
-      if (modal) modal.classList.add("hidden");
+      // Aquí puedes agregar redirección o cerrar modal
     })
     .catch(error => {
       status.classList.add("error");
@@ -133,9 +136,10 @@ function login() {
     });
 }
 
+// Registro con Firebase
 function registrarse() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+  const email = document.getElementById("email-reg").value;
+  const password = document.getElementById("password-reg").value;
   const status = document.getElementById("loginStatus");
 
   status.className = "";
@@ -147,15 +151,5 @@ function registrarse() {
     .catch(error => {
       status.classList.add("error");
       status.innerText = "Error: " + error.message;
-    });
-}
-
-function logout() {
-  firebase.auth().signOut()
-    .then(() => {
-      alert("Sesión cerrada correctamente.");
-    })
-    .catch(error => {
-      console.error("Error al cerrar sesión:", error.message);
     });
 }
