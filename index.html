@@ -15,8 +15,7 @@
         <input type="text" placeholder="Buscar..." />
         <button onclick="window.location.href='contacto.html'" class="btn-secondary">Contacto</button>
         <button onclick="toggleDarkMode()" class="btn-icon">🌓</button>
-        <button onclick="document.getElementById('loginModal').classList.remove('hidden')" class="btn-secondary btn-login">Iniciar sesión</button>
-        <button onclick="logout()" class="btn-secondary btn-logout" style="display: none;">Cerrar sesión</button>
+        <button onclick="document.getElementById('loginModal').classList.remove('hidden')" class="btn-secondary">Iniciar sesión</button>
       </nav>
     </div>
   </header>
@@ -28,88 +27,39 @@
     </section>
   </main>
 
-  <!-- Modal de inicio de sesión -->
-  <div id="loginModal" class="modal hidden">
-    <div class="modal-content">
-      <button class="close" onclick="document.getElementById('loginModal').classList.add('hidden')">&times;</button>
-      <h2>Iniciar sesión</h2>
-      <input type="email" id="email" placeholder="Correo electrónico" required />
-      <input type="password" id="password" placeholder="Contraseña" required />
-      <button class="btn-primary btn-block" onclick="login()">Entrar</button>
-      <button class="btn-secondary btn-block" onclick="registrarse()">Crear cuenta</button>
-      <p id="loginStatus"></p>
-    </div>
-  </div>
-
   <footer>
     © 2025 PsicoForo - Todos los derechos reservados
   </footer>
 
+  <!-- Modal de inicio de sesión y registro -->
+  <div id="loginModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-content">
+      <button class="close" onclick="document.getElementById('loginModal').classList.add('hidden')" aria-label="Cerrar">&times;</button>
+
+      <div class="tabs">
+        <button id="tab-login" class="active" onclick="mostrarFormulario('login')">Iniciar sesión</button>
+        <button id="tab-register" onclick="mostrarFormulario('register')">Registrarse</button>
+      </div>
+
+      <form id="form-login" onsubmit="login(); return false;">
+        <input type="email" id="email" placeholder="Correo electrónico" required />
+        <input type="password" id="password" placeholder="Contraseña" required />
+        <button type="submit" class="btn-primary btn-block">Entrar</button>
+      </form>
+
+      <form id="form-register" class="hidden" onsubmit="registrarse(); return false;">
+        <input type="email" id="email-reg" placeholder="Correo electrónico" required />
+        <input type="password" id="password-reg" placeholder="Contraseña" required />
+        <button type="submit" class="btn-primary btn-block">Crear cuenta</button>
+      </form>
+
+      <p id="loginStatus" role="alert" aria-live="assertive"></p>
+    </div>
+  </div>
+
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"></script>
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyC_vTtTea1CQIPI3f0_wfUQE-_d8cAiuJc",
-      authDomain: "psicoforo-9af0c.firebaseapp.com",
-      projectId: "psicoforo-9af0c",
-      storageBucket: "psicoforo-9af0c.appspot.com",
-      messagingSenderId: "705288317415",
-      appId: "1:705288317415:web:66be2b6b40f5759ee5f542"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-
-    function login() {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-
-      auth.signInWithEmailAndPassword(email, password)
-        .then(userCredential => {
-          const user = userCredential.user;
-          document.getElementById("loginStatus").innerText = "Bienvenido, " + user.email;
-          document.getElementById("loginModal").classList.add("hidden");
-        })
-        .catch(error => {
-          document.getElementById("loginStatus").innerText = "Error: " + error.message;
-        });
-    }
-
-    function registrarse() {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-
-      auth.createUserWithEmailAndPassword(email, password)
-        .then(userCredential => {
-          const user = userCredential.user;
-          document.getElementById("loginStatus").innerText = "Cuenta creada para " + user.email;
-        })
-        .catch(error => {
-          document.getElementById("loginStatus").innerText = "Error: " + error.message;
-        });
-    }
-
-    function logout() {
-      auth.signOut()
-        .then(() => {
-          alert("Sesión cerrada");
-        })
-        .catch(error => {
-          console.error("Error al cerrar sesión:", error.message);
-        });
-    }
-
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        document.querySelector(".btn-login").style.display = "none";
-        document.querySelector(".btn-logout").style.display = "inline-block";
-      } else {
-        document.querySelector(".btn-login").style.display = "inline-block";
-        document.querySelector(".btn-logout").style.display = "none";
-      }
-    });
-  </script>
 
   <script src="script.js"></script>
 </body>
